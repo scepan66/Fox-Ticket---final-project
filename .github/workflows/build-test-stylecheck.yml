@@ -1,0 +1,109 @@
+name: Build and Check style on Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up environment variables
+        run: |
+          echo "DB_URL=${{ secrets.DB_URL }}" >> $GITHUB_ENV
+          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "DB_DIALECT=${{ secrets.DB_DIALECT }}" >> $GITHUB_ENV
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "MAIL_HOST=${{ secrets.MAIL_HOST }}" >> $GITHUB_ENV
+          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> $GITHUB_ENV
+          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> $GITHUB_ENV
+          echo "MAIL_PORT=${{ secrets.MAIL_PORT }}" >> $GITHUB_ENV
+          echo "EXPIRATION_TIME_FOR_VERIFICATION=${{ secrets.EXPIRATION_TIME_FOR_VERIFICATION }}" >> $GITHUB_ENV
+          echo "REFRESH_EXPIRATION_TIME=${{ secrets.REFRESH_EXPIRATION_TIME }}" >> $GITHUB_ENV
+          echo "EXPIRATION_TIME=${{ secrets.EXPIRATION_TIME }}" >> $GITHUB_ENV
+
+
+
+      - name: build
+        run: gradle build -x test -x checkstyleTest -x checkstyleMain
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up environment variables
+        run: |
+          echo "DB_URL=${{ secrets.DB_URL }}" >> $GITHUB_ENV
+          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "DB_DIALECT=${{ secrets.DB_DIALECT }}" >> $GITHUB_ENV
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "MAIL_HOST=${{ secrets.MAIL_HOST }}" >> $GITHUB_ENV
+          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> $GITHUB_ENV
+          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> $GITHUB_ENV
+          echo "MAIL_PORT=${{ secrets.MAIL_PORT }}" >> $GITHUB_ENV
+          echo "EXPIRATION_TIME_FOR_VERIFICATION=${{ secrets.EXPIRATION_TIME_FOR_VERIFICATION }}" >> $GITHUB_ENV
+          echo "REFRESH_EXPIRATION_TIME=${{ secrets.REFRESH_EXPIRATION_TIME }}" >> $GITHUB_ENV
+          echo "EXPIRATION_TIME=${{ secrets.EXPIRATION_TIME }}" >> $GITHUB_ENV
+
+
+      - name: build test
+        run: gradle test -i
+
+
+  checkstyleMain:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+          cache: gradle
+
+      - name: Run checkstyleMain
+        run: gradle checkstyleMain
+
+  checkstyleTest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+          cache: gradle
+
+      - name: Run checkstyleTest
+        run: gradle checkstyleTest
